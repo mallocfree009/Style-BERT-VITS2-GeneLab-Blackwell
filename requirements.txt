@@ -41,6 +41,6 @@ tensorboard
 transformers
 umap-learn
 
-# # mallocfree009 -----------
-# soxr
-# # https://www.alwaysblue.jp/blog/how-to-build-style-bert-vits-on-mac
+# mallocfree009 -----------
+soxr
+# https://www.alwaysblue.jp/blog/how-to-build-style-bert-vits-on-mac
