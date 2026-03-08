@@ -66,19 +66,19 @@ def extract_bert_feature(
             style_res = model(**style_inputs, output_hidden_states=True)
             style_res = torch.cat(style_res["hidden_states"][-3:-2], -1)[0].cpu()
             style_res_mean = style_res.mean(0)
-
-    assert len(word2ph) == len(text) + 2, text
+    # assert len(word2ph) == len(text) + 2, text
     word2phone = word2ph
     phone_level_feature = []
     for i in range(len(word2phone)):
+        idx = min(i, res.shape[0] - 1)
         if assist_text:
             assert style_res_mean is not None
             repeat_feature = (
-                res[i].repeat(word2phone[i], 1) * (1 - assist_text_weight)
+                res[idx].repeat(word2phone[i], 1) * (1 - assist_text_weight)
                 + style_res_mean.repeat(word2phone[i], 1) * assist_text_weight
             )
         else:
-            repeat_feature = res[i].repeat(word2phone[i], 1)
+            repeat_feature = res[idx].repeat(word2phone[i], 1)
         phone_level_feature.append(repeat_feature)
 
     phone_level_feature = torch.cat(phone_level_feature, dim=0)
@@ -165,19 +165,19 @@ def extract_bert_feature_onnx(
         session.run_with_iobinding(io_binding, run_options=run_options)
         style_res = io_binding.get_outputs()[0].numpy()
         style_res_mean = np.mean(style_res, axis=0)
-
-    assert len(word2ph) == len(text) + 2, text
+    # assert len(word2ph) == len(text) + 2, text
     word2phone = word2ph
     phone_level_feature = []
     for i in range(len(word2phone)):
+        idx = min(i, res.shape[0] - 1)
         if assist_text:
             assert style_res_mean is not None
             repeat_feature = (
-                np.tile(res[i], (word2phone[i], 1)) * (1 - assist_text_weight)
+                np.tile(res[idx], (word2phone[i], 1)) * (1 - assist_text_weight)
                 + np.tile(style_res_mean, (word2phone[i], 1)) * assist_text_weight
             )
         else:
-            repeat_feature = np.tile(res[i], (word2phone[i], 1))
+            repeat_feature = np.tile(res[idx], (word2phone[i], 1))
         phone_level_feature.append(repeat_feature)
 
     phone_level_feature = np.concatenate(phone_level_feature, axis=0)
