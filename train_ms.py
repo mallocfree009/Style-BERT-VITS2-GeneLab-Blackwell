@@ -42,12 +42,21 @@ torch.backends.cudnn.allow_tf32 = (
     True  # If encontered training problem,please try to disable TF32.
 )
 torch.set_float32_matmul_precision("medium")
-torch.backends.cuda.sdp_kernel("flash")
-torch.backends.cuda.enable_flash_sdp(True)
-torch.backends.cuda.enable_mem_efficient_sdp(
-    True
-)  # Not available if torch version is lower than 2.0
-torch.backends.cuda.enable_math_sdp(True)
+# Not available if torch version is lower than 2.0
+try:
+    if torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 10:
+        # Blackwell architecture (Compute Capability >= 10.0) might not support flash_sdp or mem_efficient_sdp currently.
+        # Force fallback to math_sdp to avoid crashes during training.
+        torch.backends.cuda.enable_flash_sdp(False)
+        torch.backends.cuda.enable_mem_efficient_sdp(False)
+        torch.backends.cuda.enable_math_sdp(True)
+    else:
+        torch.backends.cuda.enable_flash_sdp(True)
+        torch.backends.cuda.enable_mem_efficient_sdp(True)
+        torch.backends.cuda.enable_math_sdp(True)
+except Exception:
+    pass
+
 
 config = get_config()
 global_step = 0
