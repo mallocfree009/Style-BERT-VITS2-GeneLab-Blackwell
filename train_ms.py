@@ -1,8 +1,12 @@
 import argparse
 import datetime
+import faulthandler
 import gc
 import os
 import platform
+import sys
+
+faulthandler.enable()
 
 import torch
 import torch.distributed as dist
@@ -54,8 +58,9 @@ try:
         torch.backends.cuda.enable_flash_sdp(True)
         torch.backends.cuda.enable_mem_efficient_sdp(True)
         torch.backends.cuda.enable_math_sdp(True)
-except Exception:
-    pass
+except Exception as e:
+    import logging
+    logging.warning(f"Failed to set SDP settings: {e}")
 
 
 config = get_config()
@@ -1002,4 +1007,8 @@ def evaluate(hps, generator, eval_loader, writer_eval):
 
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except Exception as e:
+        logger.exception(f"Unhandled exception in training script: {e}")
+        sys.exit(1)
