@@ -4,6 +4,49 @@ from typing import Any
 
 import numpy as np
 import torch
+import torchaudio
+
+# torchaudio 2.1.0+ compatibility fix for pyannote.audio
+if not hasattr(torchaudio, 'AudioMetaData'):
+    torchaudio.AudioMetaData = type('AudioMetaData', (), {})
+if not hasattr(torchaudio, 'list_audio_backends'):
+    torchaudio.list_audio_backends = lambda: ['soundfile']
+
+# huggingface_hub compatibility fix for pyannote.audio
+import huggingface_hub
+_orig_hf_hub_download = huggingface_hub.hf_hub_download
+def _patched_hf_hub_download(*args, **kwargs):
+    if 'use_auth_token' in kwargs:
+        kwargs['token'] = kwargs.pop('use_auth_token')
+    return _orig_hf_hub_download(*args, **kwargs)
+huggingface_hub.hf_hub_download = _patched_hf_hub_download
+
+# PyTorch 2.6+ compatibility fix for torch.load weights_only=True default
+import torch
+_orig_torch_load = torch.load
+def _patched_torch_load(*args, **kwargs):
+    kwargs['weights_only'] = False
+    return _orig_torch_load(*args, **kwargs)
+torch.load = _patched_torch_load
+
+# Torchaudio 2.6+ compatibility fix to bypass missing torchcodec
+_orig_torchaudio_load = getattr(torchaudio, 'load', None)
+def _patched_torchaudio_load(filepath, frame_offset=0, num_frames=-1, **kwargs):
+    import soundfile as sf
+    data, sr = sf.read(filepath, start=frame_offset, frames=num_frames, dtype='float32', always_2d=True)
+    return torch.from_numpy(data.T), sr
+torchaudio.load = _patched_torchaudio_load
+
+_orig_torchaudio_info = getattr(torchaudio, 'info', None)
+def _patched_torchaudio_info(filepath, **kwargs):
+    import soundfile as sf
+    info = sf.info(filepath)
+    ext = type('AudioMetaData', (), {})()
+    ext.num_frames = info.frames
+    ext.sample_rate = info.samplerate
+    return ext
+torchaudio.info = _patched_torchaudio_info
+
 from numpy.typing import NDArray
 from pyannote.audio import Inference, Model
 from tqdm import tqdm
