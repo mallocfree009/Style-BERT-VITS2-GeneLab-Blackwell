@@ -56,6 +56,14 @@ try:
         torch.backends.cuda.enable_flash_sdp(False)
         torch.backends.cuda.enable_mem_efficient_sdp(False)
         torch.backends.cuda.enable_math_sdp(True)
+        if hasattr(torch.backends.cuda, "enable_cudnn_sdp"):
+            torch.backends.cuda.enable_cudnn_sdp(False)
+
+        torch.backends.cuda.matmul.allow_tf32 = False
+        torch.backends.cudnn.allow_tf32 = False
+
+        if platform.system() == "Windows":
+            torch.backends.cudnn.enabled = False
     else:
         torch.backends.cuda.enable_flash_sdp(True)
         torch.backends.cuda.enable_mem_efficient_sdp(True)
