@@ -1,7 +1,16 @@
+# Before pip install -r------------------
+# uv venv venv
+# venv\Scripts\activate
+# uv pip install --upgrade pip
+# uv pip install triton-windows
+# uv pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
+
+# ------------------
 accelerate
 cmudict
 cn2an
-faster-whisper==0.10.1
+#faster-whisper==0.10.1 # mallocfree009
+faster-whisper # mallocfree009 - https://www.alwaysblue.jp/blog/how-to-build-style-bert-vits-on-mac
 g2p_en
 GPUtil
 gradio>=4.32
@@ -27,7 +36,11 @@ pypinyin
 pyworld-prebuilt
 stable_ts
 tensorboard
-torch<2.4
-torchaudio<2.4
+# torch<2.4 # mallocfree009
+# torchaudio<2.4 # mallocfree009
 transformers
 umap-learn
+
+# # mallocfree009 -----------
+# soxr
+# # https://www.alwaysblue.jp/blog/how-to-build-style-bert-vits-on-mac
