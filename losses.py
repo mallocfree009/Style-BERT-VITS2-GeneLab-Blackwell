@@ -95,6 +95,7 @@ class WavLMLoss(torch.nn.Module):
         y_rec_embeddings = (
             torch.stack(y_rec_embeddings, dim=1)
             .transpose(-1, -2)
+            .contiguous()
             .flatten(start_dim=1, end_dim=2)
         )
         y_df_hat_g = self.wd(y_rec_embeddings)
@@ -116,11 +117,13 @@ class WavLMLoss(torch.nn.Module):
             y_embeddings = (
                 torch.stack(wav_embeddings, dim=1)
                 .transpose(-1, -2)
+                .contiguous()
                 .flatten(start_dim=1, end_dim=2)
             )
             y_rec_embeddings = (
                 torch.stack(y_rec_embeddings, dim=1)
                 .transpose(-1, -2)
+                .contiguous()
                 .flatten(start_dim=1, end_dim=2)
             )
 
@@ -145,6 +148,7 @@ class WavLMLoss(torch.nn.Module):
             y_embeddings = (
                 torch.stack(wav_embeddings, dim=1)
                 .transpose(-1, -2)
+                .contiguous()
                 .flatten(start_dim=1, end_dim=2)
             )
 
