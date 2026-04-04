@@ -1,11 +1,22 @@
+# Before pip install -r------------------
+# uv venv venv
+# venv\Scripts\activate
+# uv pip install --upgrade pip
+# uv pip install triton-windows
+# uv pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
+
+# ------------------
 accelerate
-faster-whisper
+cmudict
+cn2an
+#faster-whisper==0.10.1 # mallocfree009
+faster-whisper # mallocfree009 - https://www.alwaysblue.jp/blog/how-to-build-style-bert-vits-on-mac
 g2p_en
 GPUtil
+# gradio>=4.32
 gradio==5.34.0
 jieba
-librosa
-#librosa==0.9.2
+librosa==0.9.2
 loguru
 nltk<=3.8.1
 num2words
@@ -19,13 +30,20 @@ onnxsim-prebuilt
 protobuf==4.25
 psutil
 punctuators
-pyannote.audio>=3.1.0
+pyannote.audio>=3.3.2
+torchcodec
 pyloudnorm
 pyopenjtalk-dict
 pypinyin
 pyworld-prebuilt
 stable_ts
 tensorboard
+# torch<2.4 # mallocfree009
+# torchaudio<2.4 # mallocfree009
 transformers
 umap-learn
+
+# mallocfree009 -----------
 soxr
+setuptools==80.10.2
+# https://www.alwaysblue.jp/blog/how-to-build-style-bert-vits-on-mac
